@@ -9,7 +9,7 @@ const addCart = document.querySelector('.product__add')
 const minus = document.querySelector('.product__minus')
 const plus = document.querySelector('.product__plus')
 const countOfProduct = document.querySelector('.product__counter-count')
-const imgMain = document.querySelectorAll('main .img-block img')
+const imgMain = document.querySelectorAll('main .img-block .img__slider-block img')
 
 // mobile-menu
 
@@ -18,6 +18,8 @@ hamburger.onclick = () => {
    hamburgerImg.getAttribute('src') == './images/icon-menu.svg' ? './images/icon-close.svg' : './images/icon-menu.svg'
    headerMenu.classList.toggle("active")
    document.querySelector('.wrapper').classList.toggle('active')
+   document.querySelector("body").style.overflowY =
+   headerMenu.classList.contains("active") ?  "hidden" : "scroll"
 }
 
 // cart 
@@ -43,14 +45,14 @@ addCart.onclick = () => {
 
  if(basketContainer.children.length === 1){
    basketContainer.insertBefore(div, document.querySelector('.cart__list-button')),
-      document.querySelector('.backet-count').textContent = basketContainer.children.length - 1
+      document.querySelector('.backet-count').textContent = countOfProduct.textContent
  }
    else{
       if(basketContainer.children[0].children[1].children[0].textContent === document.querySelector('.product__title').textContent){
          document.querySelector('.cart__list-sum-price').textContent = `$${Number.parseInt(document.querySelector('.cart__list-sum-price').textContent.replace('$', '')) + 125 * Number.parseInt(countOfProduct.textContent)}`
          //+ 125 * Number.parseInt(countOfProduct.textContent)
          document.querySelector('.cart__list-count').textContent = Number.parseInt(document.querySelector('.cart__list-count').textContent) + Number.parseInt(countOfProduct.textContent) + ' '
-         document.querySelector('.backet-count').textContent = basketContainer.children.length - 1
+         document.querySelector('.backet-count').textContent = document.querySelector('.cart__list-count').textContent
        }
        
        else{
@@ -78,7 +80,7 @@ plus.onclick = () => {
    countOfProduct.textContent = Number.parseInt(countOfProduct.textContent) +1
 }
 
-let activeImgMain = 1;
+let activeImgMain = 0;
 
 imgMain.forEach((elem, i) => {
    elem.onclick = () => {
@@ -89,49 +91,75 @@ imgMain.forEach((elem, i) => {
    }
 })
 
-
 // popup
 
 const images = document.querySelectorAll('.popup__container .img-block .img__slider-block img')
-const leftArrow = document.querySelector('.arrow:first-child')
-const rightArrow = document.querySelector('.arrow:nth-child(3)')
+const leftArrow = document.querySelector('#arrow-left')
+const rightArrow = document.querySelector('#arrow-right')
 const closeIcon = document.querySelector('.img-block p')
 let active = 0
 console.log(leftArrow)
 console.log(rightArrow)
 console.log(images)
 
-rightArrow.onclick = () => {
-   images[active].classList.remove("active")
-   active + 1 == images.length ? active=0 : active++
-   images[active].classList.add("active")
-   // document.querySelector("#main-img").src = images[active].src
-   document.querySelector("#popup-main-img").src = images[active].src
-}
-leftArrow.onclick = () => {
-   images[active].classList.remove("active")
-   active - 1 < 0 ? active = images.length - 1 : active--
-   images[active].classList.add("active")
-   // document.querySelector("#main-img").src = images[active].src
-   document.querySelector("#popup-main-img").src = images[active].src
-}
+window.onload = () => {
+   if(window.screen.width > 540){
+      rightArrow.onclick = () => {
+         images[active].classList.remove("active")
+         active + 1 == images.length ? active=0 : active++
+         images[active].classList.add("active")
+         // document.querySelector("#main-img").src = images[active].src
+         document.querySelector("#popup-main-img").src = images[active].src
+      }
+      leftArrow.onclick = () => {
+         images[active].classList.remove("active")
+         active - 1 < 0 ? active = images.length - 1 : active--
+         images[active].classList.add("active")
+         // document.querySelector("#main-img").src = images[active].src
+         document.querySelector("#popup-main-img").src = images[active].src
+      }
+      
+      images.forEach((img, i) => {
+         img.onclick = () => {
+            // document.querySelector("#main-img").src = img.src
+            document.querySelector("#popup-main-img").src = img.src
+            images[active].classList.remove("active")
+            active = i
+            images[active].classList.add("active")
+         }
+      })
+      
+      closeIcon.onclick = () => {
+         document.querySelector('.popup').style.display = "none"
+         document.querySelector("body").style.overflowY = "scroll"
+      }
+      
+      // popup open 
+      
+      document.querySelector('#main-img').onclick = () => {
+         document.querySelector('.popup').style.display = "block"
+         // window.pageYOffset = 0
+         document.querySelector("body").style.overflowY = "hidden"
+         document.querySelector('.popup').style.marginTop = window.pageYOffset + "px"
+      }
+      
+   } else{ // max-width < 540
+      const arrMainLeft = document.querySelector('#arrow-left-main')
+      const arrMainRight = document.querySelector('#arrow-right-main')
+      let count = 0 
+      arrMainLeft.onclick = () => {
+         count - 1 < 0 ? count = imgMain.length-1 : count--
+         document.querySelector('#main-img').src = imgMain[count].src
+      }
 
-images.forEach((img, i) => {
-   img.onclick = () => {
-      // document.querySelector("#main-img").src = img.src
-      document.querySelector("#popup-main-img").src = img.src
-      images[active].classList.remove("active")
-      active = i
-      images[active].classList.add("active")
-   }
-})
-
-closeIcon.onclick = () => {
-   document.querySelector('.popup').style.display = "none"
+      arrMainRight.onclick = () =>  {
+         count + 1 > imgMain.length-1 ? count = 0 : count++
+         document.querySelector('#main-img').src = imgMain[count].src
+      }
+      }
+   console.log(window.screen.width)
 }
+   
 
-// popup open 
 
-document.querySelector('#main-img').onclick = () => {
-   document.querySelector('.popup').style.display = "block"
-}
+
